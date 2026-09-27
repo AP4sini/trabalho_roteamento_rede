@@ -55,8 +55,7 @@ class DelayLS:
                 "hist": deque(maxlen=10), "adv": None, "ifname": None,
             }
 
-    # ------------------------------------------------- ganchos do sistema ----
-    # (isolados em métodos para permitir simulação em tests/test_delay_ls.py)
+    
     def ifname_of(self, local_ip):
         return iface_by_ip(local_ip)
 
@@ -69,20 +68,18 @@ class DelayLS:
     def remove_route(self, net):
         sh(f"ip route del {net} proto {KRT_PROTO}")
 
-    # ------------------------------------------------------------ rede ----
     def send(self, ip, msg):
         try:
             self.sock.sendto(json.dumps(msg, separators=(",", ":")).encode(), (ip, PORT))
         except OSError:
-            pass  # interface caída: a detecção de vizinho morto cuida do resto
-
+            pass  
+        
     def flood(self, msg, skip_ip=None):
         with self.lock:
             targets = [ip for ip, n in self.nbrs.items() if n["up"] and ip != skip_ip]
         for ip in targets:
             self.send(ip, msg)
 
-    # ------------------------------------------------------- vizinhança ----
     def cost_of(self, n):
         loss = 1.0 - (sum(n["hist"]) / len(n["hist"])) if n["hist"] else 0.0
         return round(n["ewma"] + HOP_PENALTY + LOSS_PENALTY * loss, 1)
@@ -133,7 +130,6 @@ class DelayLS:
         for ip in list(self.nbrs):
             self.send(ip, {"t": "P", "id": self.me, "ts": time.monotonic()})
 
-    # ---------------------------------------------------------- LSAs ------
     def lsa_msg(self, lsa, origin=None):
         return {"t": "L", "o": origin or lsa["o"], "seq": lsa["seq"],
                 "links": lsa["links"], "nets": lsa["nets"]}
@@ -174,7 +170,6 @@ class DelayLS:
         if dead:
             self.spf_evt.set()
 
-    # ---------------------------------------------------------- SPF --------
     def compute_routes(self):
         """Dijkstra. Retorna {prefixo_LAN: (proximo_salto_roteador, custo, saltos)}."""
         with self.lock:
@@ -220,7 +215,6 @@ class DelayLS:
             del self.installed[net]
             self.log.info("ROTA %s removida", net)
 
-    # ------------------------------------------------------- threads -------
     def handle(self, ip, data):
         if ip not in self.nbrs:
             return
@@ -248,7 +242,7 @@ class DelayLS:
     def spf_loop(self):
         while True:
             self.spf_evt.wait()
-            time.sleep(SPF_HOLD)          # agrupa rajadas de eventos
+            time.sleep(SPF_HOLD)         
             self.spf_evt.clear()
             self.install(self.compute_routes())
 
