@@ -1,0 +1,154 @@
+# ARQUIVO GERADO por scripts/gen_compose.py -- não edite à mão.
+name: ga-routing
+x-base: &base
+  image: ga-router:latest
+  build: .
+  volumes:
+    - ./:/opt/ga:ro
+  cap_add: [NET_ADMIN]
+  init: true
+  sysctls:
+    net.ipv4.ip_forward: 1
+    net.ipv4.conf.all.rp_filter: 0
+    net.ipv4.conf.default.rp_filter: 0
+
+services:
+  R1:
+    <<: *base
+    container_name: R1
+    hostname: R1
+    environment: [ROUTER=R1]
+    command: python3 /opt/ga/router/init.py
+    networks:
+      net_L12: {ipv4_address: 10.0.12.1}
+      net_L15: {ipv4_address: 10.0.15.2}
+      net_L13: {ipv4_address: 10.0.13.1}
+      lan_R1: {ipv4_address: 192.168.1.1}
+  R2:
+    <<: *base
+    container_name: R2
+    hostname: R2
+    environment: [ROUTER=R2]
+    command: python3 /opt/ga/router/init.py
+    networks:
+      net_L12: {ipv4_address: 10.0.12.2}
+      net_L23: {ipv4_address: 10.0.23.1}
+      net_L25: {ipv4_address: 10.0.25.1}
+      lan_R2: {ipv4_address: 192.168.2.1}
+  R3:
+    <<: *base
+    container_name: R3
+    hostname: R3
+    environment: [ROUTER=R3]
+    command: python3 /opt/ga/router/init.py
+    networks:
+      net_L23: {ipv4_address: 10.0.23.2}
+      net_L34: {ipv4_address: 10.0.34.1}
+      net_L13: {ipv4_address: 10.0.13.2}
+      lan_R3: {ipv4_address: 192.168.3.1}
+  R4:
+    <<: *base
+    container_name: R4
+    hostname: R4
+    environment: [ROUTER=R4]
+    command: python3 /opt/ga/router/init.py
+    networks:
+      net_L34: {ipv4_address: 10.0.34.2}
+      net_L45: {ipv4_address: 10.0.45.1}
+      lan_R4: {ipv4_address: 192.168.4.1}
+  R5:
+    <<: *base
+    container_name: R5
+    hostname: R5
+    environment: [ROUTER=R5]
+    command: python3 /opt/ga/router/init.py
+    networks:
+      net_L45: {ipv4_address: 10.0.45.2}
+      net_L15: {ipv4_address: 10.0.15.1}
+      net_L25: {ipv4_address: 10.0.25.2}
+      lan_R5: {ipv4_address: 192.168.5.1}
+  H1:
+    <<: *base
+    container_name: H1
+    hostname: H1
+    command: sh -c "ip route replace default via 192.168.1.1 && exec sleep infinity"
+    networks:
+      lan_R1: {ipv4_address: 192.168.1.10}
+  H2:
+    <<: *base
+    container_name: H2
+    hostname: H2
+    command: sh -c "ip route replace default via 192.168.2.1 && exec sleep infinity"
+    networks:
+      lan_R2: {ipv4_address: 192.168.2.10}
+  H3:
+    <<: *base
+    container_name: H3
+    hostname: H3
+    command: sh -c "ip route replace default via 192.168.3.1 && exec sleep infinity"
+    networks:
+      lan_R3: {ipv4_address: 192.168.3.10}
+  H4:
+    <<: *base
+    container_name: H4
+    hostname: H4
+    command: sh -c "ip route replace default via 192.168.4.1 && exec sleep infinity"
+    networks:
+      lan_R4: {ipv4_address: 192.168.4.10}
+  H5:
+    <<: *base
+    container_name: H5
+    hostname: H5
+    command: sh -c "ip route replace default via 192.168.5.1 && exec sleep infinity"
+    networks:
+      lan_R5: {ipv4_address: 192.168.5.10}
+
+networks:
+  net_L12:
+    internal: true
+    ipam:
+      config: [{subnet: 10.0.12.0/29, gateway: 10.0.12.6}]
+  net_L23:
+    internal: true
+    ipam:
+      config: [{subnet: 10.0.23.0/29, gateway: 10.0.23.6}]
+  net_L34:
+    internal: true
+    ipam:
+      config: [{subnet: 10.0.34.0/29, gateway: 10.0.34.6}]
+  net_L45:
+    internal: true
+    ipam:
+      config: [{subnet: 10.0.45.0/29, gateway: 10.0.45.6}]
+  net_L15:
+    internal: true
+    ipam:
+      config: [{subnet: 10.0.15.0/29, gateway: 10.0.15.6}]
+  net_L13:
+    internal: true
+    ipam:
+      config: [{subnet: 10.0.13.0/29, gateway: 10.0.13.6}]
+  net_L25:
+    internal: true
+    ipam:
+      config: [{subnet: 10.0.25.0/29, gateway: 10.0.25.6}]
+  lan_R1:
+    internal: true
+    ipam:
+      config: [{subnet: 192.168.1.0/24, gateway: 192.168.1.254}]
+  lan_R2:
+    internal: true
+    ipam:
+      config: [{subnet: 192.168.2.0/24, gateway: 192.168.2.254}]
+  lan_R3:
+    internal: true
+    ipam:
+      config: [{subnet: 192.168.3.0/24, gateway: 192.168.3.254}]
+  lan_R4:
+    internal: true
+    ipam:
+      config: [{subnet: 192.168.4.0/24, gateway: 192.168.4.254}]
+  lan_R5:
+    internal: true
+    ipam:
+      config: [{subnet: 192.168.5.0/24, gateway: 192.168.5.254}]
