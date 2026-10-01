@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Teste do DELAY-LS em simulação (sem Docker): 5 instâncias trocando mensagens em memória,
 com os atrasos da topologia. Verifica: convergência, escolha do caminho por atraso (e não

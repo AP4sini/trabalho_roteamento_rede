@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-"""Lê results/*.json (gerados por experiment.py) e produz gráficos + tabela-resumo.
-Uso: python3 scripts/plot.py [--dir results]      (requer: pip install matplotlib)
-"""
 import argparse, glob, json, os, statistics as st
 import matplotlib
 matplotlib.use("Agg")
@@ -111,9 +107,15 @@ if __name__ == "__main__":
     linha("RTT regime (ms)", "rtt_ms_base")
     linha("RTT após falha (ms)", "rtt_ms_pos_falha")
     linha("RTT após degradação (ms)", "rtt_ms_pos_degradacao")
-    linhas.append("| Caminho H1->H4 (regime) | " + " | ".join(">".join(runs[p][0]["caminho_base"]) for p in ps) + " |")
-    linhas.append("| Caminho após falha | " + " | ".join(">".join(runs[p][0]["caminho_pos_falha"]) for p in ps) + " |")
-    linhas.append("| Caminho após degradação | " + " | ".join(">".join(runs[p][0]["caminho_pos_degradacao"]) for p in ps) + " |")
-    linhas.append("| Desviou da degradação? | " + " | ".join("sim" if runs[p][0]["desviou_da_degradacao"] else "não" for p in ps) + " |")
+    def moda_caminho(p, campo):
+        """Caminho mais frequente entre as rodadas (em caso de empate, o da 1ª rodada)."""
+        cams = [">".join(r[campo]) for r in runs[p]]
+        return max(set(cams), key=lambda c: (cams.count(c), -cams.index(c)))
+
+    linhas.append("| Caminho H1->H4 (regime) | " + " | ".join(moda_caminho(p, "caminho_base") for p in ps) + " |")
+    linhas.append("| Caminho após falha | " + " | ".join(moda_caminho(p, "caminho_pos_falha") for p in ps) + " |")
+    linhas.append("| Caminho após degradação | " + " | ".join(moda_caminho(p, "caminho_pos_degradacao") for p in ps) + " |")
+    linhas.append("| Desviou da degradação? (rodadas) | " +
+                  " | ".join(f"{sum(1 for r in runs[p] if r['desviou_da_degradacao'])}/{len(runs[p])}" for p in ps) + " |")
     open(os.path.join(a.dir, "resumo.md"), "w").write("\n".join(linhas) + "\n")
     print("\n".join(linhas)); print(f"\nGráficos em {out}/")
