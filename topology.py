@@ -1,18 +1,3 @@
-"""
-Topologia do laboratório (fonte única de verdade).
-
-Tudo (docker-compose, configs do BIRD, algoritmo próprio, scripts de
-experimento) é derivado deste arquivo. Para mudar a topologia, edite aqui e
-rode `python3 scripts/gen_compose.py`.
-
-Cinco roteadores (R1..R5), cada um com uma LAN 192.168.N.0/24 e um host HN.
-Sete enlaces ponto a ponto, formando um anel (R1-R2-R3-R4-R5-R1) mais duas
-cordas (R1-R3 e R2-R5), o que dá vários caminhos entre quaisquer pontos.
-A corda R1-R3 é propositalmente "1 salto, porém lenta" (10 Mbit, 40 ms):
-protocolos que só contam saltos (RIP) vão preferi-la; os demais, não.
-
-LINKS_DEF: (roteador_a, roteador_b, atraso_unidirecional_ms, taxa_Mbit)
-"""
 import ipaddress
 
 ROUTERS = ["R1", "R2", "R3", "R4", "R5"]

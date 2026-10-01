@@ -1,7 +1,7 @@
 """
 DELAY-LS -> algoritmo próprio de roteamento (estado de enlace com custo medido).
 
-Ideia em uma frase: cada roteador MEDE o atraso real dos seus enlaces, inunda essa
+Ideia: cada roteador MEDE o atraso real dos seus enlaces, inunda essa
 informação pela rede e todos rodam Dijkstra sobre o atraso medido, em vez de usar
 contagem de saltos (RIP) ou um custo configurado à mão (OSPF).
 

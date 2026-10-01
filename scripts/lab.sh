@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-# Utilitário do laboratório. Uso: scripts/lab.sh <comando> [args]
 set -euo pipefail
 cd "$(dirname "$0")/.."
 R="R1 R2 R3 R4 R5"
