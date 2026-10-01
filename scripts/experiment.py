@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Experimento automatizado: para cada protocolo (ospf, rip, custom) executa a mesma sequência
 de cenários sobre a mesma topologia e grava as métricas em results/<protocolo>_<rodada>.json.

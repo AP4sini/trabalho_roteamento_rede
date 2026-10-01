@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Inicialização do roteador: aplica atraso e taxa (tc netem) em cada enlace e fica vivo."""
 import time
 import topology as T
