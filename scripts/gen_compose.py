@@ -5,7 +5,7 @@ import topology as T
 
 out = []
 w = out.append
-w("# ARQUIVO GERADO por scripts/gen_compose.py -- não edite à mão.")
+w("# ARQUIVO GERADO por scripts/gen_compose.py")
 w("name: ga-routing")
 w("x-base: &base")
 w("  image: ga-router:latest")

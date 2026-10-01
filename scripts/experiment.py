@@ -220,4 +220,4 @@ if __name__ == "__main__":
     for k in range(1, a.runs + 1):
         for p in a.protocols:
             run(p, a.out, k)
-    print("Concluído. Gere os gráficos com: python3 scripts/plot.py")
+    print("Concluído")

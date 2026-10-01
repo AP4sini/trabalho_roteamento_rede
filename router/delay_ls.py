@@ -221,7 +221,7 @@ class DelayLS:
         try:
             m = json.loads(data)
             {"P": self.on_probe, "R": self.on_reply, "L": self.on_lsa}[m["t"]](ip, m)
-        except Exception as e:                           # mensagem malformada não derruba o daemon
+        except Exception as e:                          
             self.log.warning("mensagem inválida de %s: %s", ip, e)
 
     def rx_loop(self):
